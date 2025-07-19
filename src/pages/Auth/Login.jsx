@@ -15,7 +15,7 @@ export default function Login() {
 
     return(
         <form>
-            <input value={form.username} onChange={(e) => setForm({...form, username: e.target.value})} placeholder="Username" />
+            <input value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} placeholder="Username" />
             <input value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} placeholder="Password"    type="password" />
             <button type="submit">Login</button>
         </form>
