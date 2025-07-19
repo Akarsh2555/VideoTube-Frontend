@@ -1,21 +1,23 @@
-import axios from "../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 export const toggleVideoLike = async (videoId) => {
-  const { data } = await axios.post(`/likes/toggle-video-like/${videoId}`);
+  const { data } = await axiosInstance.post(`/likes/toggle-video-like/${videoId}`);
   return data;
 };
 
 export const toggleCommentLike = async (commentId) => {
-  const { data } = await axios.post(`/likes/toggle-comment-like/${commentId}`);
+  const { data } = await axiosInstance.post(
+    `/likes/toggle-comment-like/${commentId}`
+  );
   return data;
 };
 
 export const toggleTweetLike = async (tweetId) => {
-  const { data } = await axios.post(`/likes/toggle-tweet-like/${tweetId}`);
+  const { data } = await axiosInstance.post(`/likes/toggle-tweet-like/${tweetId}`);
   return data;
 };
 
 export const getLikedVideos = async () => {
-  const { data } = await axios.get(`/likes/liked-videos`);
+  const { data } = await axiosInstance.get("/likes/liked-videos");
   return data;
 };

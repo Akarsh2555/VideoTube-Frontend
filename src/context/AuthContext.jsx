@@ -17,7 +17,10 @@ export const AuthProvider = ({ children }) => {
           setUser(res.data.data);
         } catch (err) {
           console.error("Failed to fetch user:", err);
-          logout(); // Invalid token or session expired
+          // Invalid token or session expired - clear everything
+          localStorage.removeItem("token");
+          setToken(null);
+          setUser(null);
         }
       }
       setLoading(false);
@@ -26,9 +29,13 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, [token]);
 
-  const login = (authToken) => {
+  const login = (authToken, userData = null) => {
     localStorage.setItem("token", authToken);
     setToken(authToken);
+    // Optionally set user data immediately if provided
+    if (userData) {
+      setUser(userData);
+    }
   };
 
   const logout = () => {
@@ -37,13 +44,35 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const isAuthenticated = !!token;
+  const updateUser = (userData) => {
+    setUser(userData);
+  };
+
+  const isAuthenticated = !!token && !!user;
+
+  const value = {
+    token,
+    user,
+    login,
+    logout,
+    updateUser,
+    isAuthenticated,
+    loading,
+  };
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, isAuthenticated }}>
-      {!loading && children}
+    <AuthContext.Provider value={value}>
+      {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  
+  return context;
+};

@@ -1,21 +1,30 @@
-import axios from "../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
 export const addComment = async (videoId, content) => {
-  const { data } = await axios.post(`/comments/add-comment/${videoId}`, { content });
+  const { data } = await axiosInstance.post(`/comments/add-comment/${videoId}`, {
+    content,
+  });
   return data;
 };
 
 export const updateComment = async (commentId, content) => {
-  const { data } = await axios.patch(`/comments/update-comment/${commentId}`, { content });
+  const { data } = await axiosInstance.patch(
+    `/comments/update-comment/${commentId}`,
+    { content }
+  );
   return data;
 };
 
 export const deleteComment = async (commentId) => {
-  const { data } = await axios.delete(`/comments/delete-comment/${commentId}`);
+  const { data } = await axiosInstance.delete(
+    `/comments/delete-comment/${commentId}`
+  );
   return data;
 };
 
 export const getVideoComments = async (videoId) => {
-  const { data } = await axios.get(`/comments/video-comments/${videoId}/comments`);
+  const { data } = await axiosInstance.get(
+    `/comments/video-comments/${videoId}/comments`
+  );
   return data;
 };

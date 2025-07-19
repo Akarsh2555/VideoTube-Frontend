@@ -1,4 +1,4 @@
-import axiosInstance  from "./axiosInstance";
+import axiosInstance from "./axiosInstance";
 
 // Register user with avatar and coverImage
 export const registerUser = (formData) =>
@@ -9,16 +9,14 @@ export const registerUser = (formData) =>
   });
 
 // Login user
-export const login = (credentials) =>
+export const loginUser = (credentials) =>
   axiosInstance.post("/user/login", credentials);
 
 // Logout user
-export const logoutUser = () =>
-  axiosInstance.post("/user/logout");
+export const logoutUser = () => axiosInstance.post("/user/logout");
 
 // Get current user profile
-export const getCurrentUser = () =>
-  axiosInstance.get("/user/get-current-user");
+export const getCurrentUser = () => axiosInstance.get("/user/get-current-user");
 
 // Get user channel/profile info
 export const getUserProfile = (userId) =>
@@ -37,5 +35,4 @@ export const updateUserAvatarOrCover = (formData) =>
   });
 
 // Delete user account
-export const deleteAccount = () =>
-  axiosInstance.delete("/user/delete-account");
+export const deleteAccount = () => axiosInstance.delete("/user/delete-account");
