@@ -5,9 +5,9 @@ export const getChannelStats = async () => {
   return data;
 };
 
-export const getChannelVideos = async (channelId) => {
+export const getChannelVideos = async (channelId, page = 1, limit = 10) => {
   const { data } = await axiosInstance.get(
-    `/dashboard/channel-videos/${channelId}`
+    `/dashboard/channel-videos/${channelId}?page=${page}&limit=${limit}`
   );
   return data;
 };

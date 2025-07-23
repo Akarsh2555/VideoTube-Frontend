@@ -7,7 +7,7 @@ export const createTweet = async (content) => {
 
 export const updateTweet = async (tweetId, content) => {
   const { data } = await axiosInstance.patch(`/tweets/update-tweet/${tweetId}`, {
-    content,
+    newContent: content, // Fixed: backend expects 'newContent'
   });
   return data;
 };
