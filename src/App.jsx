@@ -17,6 +17,7 @@ import Comments from "./pages/Comments";
 import Watch from "./pages/Watch";
 import CommunityTweets from "./pages/CommunityTweets";
 import WatchHistory from "./pages/WatchHistory";
+import Likes from "./pages/Likes";
 
 // Protected Route Wrapper (only for authenticated users)
 const ProtectedRoute = ({ children }) => {
