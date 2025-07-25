@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getLikedVideos } from "../api/likes";
 import { Heart, Play } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Likes = () => {
   const [likedVideos, setLikedVideos] = useState([]);
@@ -58,16 +59,18 @@ const Likes = () => {
         {!loading && likedVideos.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {likedVideos.map((video) => (
-              <div
+              <Link
                 key={video._id}
-                className="bg-gradient-to-tr from-indigo-900 to-purple-900 rounded-2xl shadow-xl overflow-hidden flex flex-col border border-purple-700/40 hover:shadow-2xl transition"
+                to={`/watch/${video._id}`}
+                className="bg-gradient-to-tr from-indigo-900 to-purple-900 rounded-2xl shadow-xl overflow-hidden flex flex-col border border-purple-700/40 hover:shadow-2xl transition group"
+                aria-label={`Watch video titled ${video.title}`}
               >
                 {/* Thumbnail */}
                 <div className="aspect-video w-full relative overflow-hidden rounded-t-2xl">
                   <img
                     src={video.thumbnail}
                     alt={video.title}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     onError={(e) => {
                       e.target.src = "/placeholder-thumbnail.jpg";
                     }}
@@ -92,7 +95,7 @@ const Likes = () => {
                     <span>{new Date(video.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
