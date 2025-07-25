@@ -8,7 +8,6 @@ import { useAuth } from '../context/AuthContext';
 import { addComment, updateComment, deleteComment, getVideoComments } from '../api/comments';
 import { toggleVideoLike, toggleCommentLike } from '../api/likes';
 import { toggleSubscription } from '../api/subscriptions';
-import axiosInstance from '../api/axiosInstance';
 
 // Lucide React icons
 import { 
@@ -37,45 +36,45 @@ export default function Watch() {
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Comments state
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [editingComment, setEditingComment] = useState(null);
   const [editContent, setEditContent] = useState('');
-  
+
   // Like and subscribe state
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        setLoading(true);
-        const response = await getVideoById(id);
-        const videoData = response.data.data;
-        setVideo(videoData);
-        setLikeCount(videoData.likesCount || 0);
-        setIsLiked(videoData.isLiked || false);
-        setIsSubscribed(videoData.isSubscribed || false);
-        setError(null);
-        
-        // Fetch comments when video is loaded
-        fetchComments();
-      } catch (error) {
-        console.error('Error fetching video:', error);
-        setError('Failed to load video. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // --- CORRECT: fetchVideo is now re-callable, safely sets all state
+  const fetchVideo = async () => {
+    try {
+      setLoading(true);
+      const response = await getVideoById(id);
+      const videoData = response.data.data;
+      setVideo(videoData);
+      setLikeCount(videoData.likesCount || 0);
+      setIsLiked(videoData.isLiked || false);
+      setIsSubscribed(videoData.isSubscribed || false);
+      setError(null);
 
-    if (id) {
-      fetchVideo();
+      // Fetch comments when video is loaded
+      fetchComments();
+    } catch (error) {
+      console.error('Error fetching video:', error);
+      setError('Failed to load video. Please try again.');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (id) fetchVideo();
+    // eslint-disable-next-line
   }, [id]);
 
   // Fetch comments
@@ -91,28 +90,25 @@ export default function Watch() {
     }
   };
 
-  // Handle video like
+  // Handle video like (CORRECT: refetches backend state after toggle)
   const handleLike = async () => {
     try {
       await toggleVideoLike(id);
-      setIsLiked(!isLiked);
-      setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+      await fetchVideo(); // ensures state in sync
     } catch (error) {
       console.error('Error toggling like:', error);
     }
   };
 
-  // Handle subscribe - Fixed implementation
+  // Handle subscribe
   const handleSubscribe = async () => {
     if (!video?.owner?._id) return;
-    
     try {
       setSubscriptionLoading(true);
       const response = await toggleSubscription(video.owner._id);
       setIsSubscribed(response.data.isSubscribed);
     } catch (error) {
       console.error('Error toggling subscription:', error);
-      // Show error message to user
       alert('Failed to update subscription. Please try again.');
     } finally {
       setSubscriptionLoading(false);
@@ -123,7 +119,6 @@ export default function Watch() {
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-
     try {
       const response = await addComment(id, newComment);
       setComments(prev => [response.data, ...prev]);
@@ -136,7 +131,6 @@ export default function Watch() {
   // Handle edit comment
   const handleEditComment = async (commentId) => {
     if (!editContent.trim()) return;
-
     try {
       await updateComment(commentId, editContent);
       setComments(prev =>
@@ -156,7 +150,6 @@ export default function Watch() {
   // Handle delete comment
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm('Are you sure you want to delete this comment?')) return;
-
     try {
       await deleteComment(commentId);
       setComments(prev => prev.filter(comment => comment._id !== commentId));

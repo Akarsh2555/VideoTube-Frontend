@@ -17,7 +17,8 @@ import {
   Mail,
   Sparkles,
   ChevronRight,
-  Book
+  Book,
+  Heart
 } from "lucide-react";
 
 const Layout = ({ children }) => {
@@ -33,7 +34,8 @@ const Layout = ({ children }) => {
     { path: "/tweets", icon: MessageSquare, label: "Tweets", gradient: "from-green-500 to-emerald-500" },
     { path: "/subscriptions", icon: Users, label: "Subscriptions", gradient: "from-orange-500 to-yellow-500" },
     {path: "/community-tweets", icon: Bird, label: "Community-Tweets", gradient: "from-teal-500 to-cyan-500" },
-    {path: "/history", icon: Book, label: "Watch History", gradient: "from-gray-500 to-slate-500" }
+    {path: "/history", icon: Book, label: "Watch History", gradient: "from-gray-500 to-slate-500" },
+    {path: "/like", icon: Heart, label: "Likes", gradient: "from-pink-500 to-purple-500" }
   ];
 
   const isActivePath = (path) => {

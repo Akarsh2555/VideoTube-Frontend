@@ -160,6 +160,14 @@ const AppRoutes = () => {
         </ProtectedLayoutRoute>
         }
       />
+      <Route
+      path="/like"
+      element={
+        <ProtectedLayoutRoute>
+          <Likes />
+        </ProtectedLayoutRoute>
+        }
+      />
       {/* Catch all route */}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

@@ -5,9 +5,7 @@ import {
   deleteTweet,
   getUserTweets,
 } from "../api/tweets";
-import { toggleTweetLike } from "../api/likes";
 import {
-  Heart,
   Edit3,
   Trash2,
   Send,
@@ -22,7 +20,6 @@ const MyTweets = () => {
   const [editContent, setEditContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [likedTweets, setLikedTweets] = useState(new Set());
 
   const fetchTweets = async () => {
     try {
@@ -47,6 +44,7 @@ const MyTweets = () => {
 
   useEffect(() => {
     fetchTweets();
+    // eslint-disable-next-line
   }, []);
 
   const handlePost = async () => {
@@ -91,24 +89,6 @@ const MyTweets = () => {
       console.error("Error deleting tweet:", err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleLike = async (tweetId) => {
-    try {
-      await toggleTweetLike(tweetId);
-      setLikedTweets((prev) => {
-        const newLiked = new Set(prev);
-        if (newLiked.has(tweetId)) {
-          newLiked.delete(tweetId);
-        } else {
-          newLiked.add(tweetId);
-        }
-        return newLiked;
-      });
-    } catch (err) {
-      setError("Failed to toggle like");
-      console.error("Error toggling like:", err);
     }
   };
 
@@ -251,25 +231,7 @@ const MyTweets = () => {
                     </>
                   )}
                 </div>
-                {editingId !== tweet._id && (
-                  <footer className="border-t border-purple-700/50 bg-gray-800 rounded-b-3xl px-5 py-3 flex items-center space-x-8">
-                    <button
-                      onClick={() => handleLike(tweet._id)}
-                      className={`flex items-center space-x-2 text-sm font-semibold transition-colors ${
-                        likedTweets.has(tweet._id) ? "text-pink-500 hover:text-pink-600" : "text-pink-400"
-                      }`}
-                      aria-pressed={likedTweets.has(tweet._id)}
-                      aria-label="Toggle like"
-                    >
-                      <Heart
-                        size={18}
-                        fill={likedTweets.has(tweet._id) ? "currentColor" : "none"}
-                        stroke="currentColor"
-                      />
-                      <span>{likedTweets.has(tweet._id) ? "Liked" : "Like"}</span>
-                    </button>
-                  </footer>
-                )}
+                {/* Like feature removed */}
               </article>
             ))
           )}
