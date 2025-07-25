@@ -1,15 +1,10 @@
-// pages/Watch.jsx
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getVideoById } from '../api/videos';
 import { useAuth } from '../context/AuthContext';
-
-// Comments & likes apis
 import { addComment, updateComment, deleteComment, getVideoComments } from '../api/comments';
-import { toggleVideoLike, toggleCommentLike } from '../api/likes';
+import { toggleVideoLike } from '../api/likes';
 import { toggleSubscription } from '../api/subscriptions';
-
-// Lucide icons
 import { 
   ThumbsUp, 
   Share2, 
@@ -90,24 +85,25 @@ export default function Watch() {
     }
   };
 
-  // Toggle like - refetch video to sync state after
+  // Toggle like - FIXED: Only sync from backend
   const handleLike = async () => {
     try {
       await toggleVideoLike(id);
-      // Refetch video state after toggling like to maintain consistency
-      await fetchVideo();
+      await fetchVideo(); // await here to sync UI to backend
     } catch (err) {
       console.error('Error toggling like:', err);
     }
   };
 
-  // Subscribe toggle
+  // Subscribe toggle - FIXED: Better response handling
   const handleSubscribe = async () => {
     if (!video?.owner?._id) return;
     try {
       setSubscriptionLoading(true);
       const response = await toggleSubscription(video.owner._id);
-      setIsSubscribed(response.data.isSubscribed);
+      // Handle different possible response structures
+      const isSubscribedResponse = response?.data?.isSubscribed ?? response?.data?.data?.isSubscribed;
+      setIsSubscribed(isSubscribedResponse);
     } catch (err) {
       console.error('Error toggling subscription:', err);
       alert('Failed to update subscription. Please try again.');
@@ -157,27 +153,7 @@ export default function Watch() {
     }
   };
 
-  // Like comment
-  const handleCommentLike = async (commentId) => {
-    try {
-      await toggleCommentLike(commentId);
-      setComments(prev =>
-        prev.map(comment =>
-          comment._id === commentId
-          ? { 
-              ...comment, 
-              isLiked: !comment.isLiked,
-              likesCount: comment.isLiked ? (comment.likesCount || 0) -1 : (comment.likesCount || 0) +1
-            }
-          : comment
-        )
-      );
-    } catch (err) {
-      console.error('Error toggling comment like:', err);
-    }
-  };
-
-    if (loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
@@ -236,7 +212,7 @@ export default function Watch() {
                 <div className="flex items-center justify-between text-white">
                   <div className="flex items-center space-x-2">
                     <Play className="w-6 h-6" fill="currentColor" />
-                    <span className="font-medium">Now Playing</span>
+                    <span className="text-lg font-semibold">{video.title}</span>
                   </div>
                   <div className="flex items-center space-x-4 text-sm">
                     <span className="flex items-center">
@@ -395,6 +371,9 @@ export default function Watch() {
                 src={user?.avatar || '/default-avatar.png'}
                 alt={user?.fullName}
                 className="w-12 h-12 rounded-full object-cover ring-3 ring-indigo-100 flex-shrink-0"
+                onError={(e) => {
+                  e.target.src = '/default-avatar.png';
+                }}
               />
               <div className="flex-1">
                 <div className="relative">
@@ -450,14 +429,12 @@ export default function Watch() {
                   className="flex space-x-4 p-6 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-indigo-50 transition-all duration-300 border border-transparent hover:border-indigo-100"
                 >
                   <img
-                  src={comment.owner?.avatar || '/default-avatar.png'}
-  alt={comment.owner?.fullName || 'User avatar'}
-  className="w-12 h-12 rounded-full object-cover ring-3 ring-gray-100 flex-shrink-0"
-  onError={(e) => {
-    if (e.target.src !== '/default-avatar.png') {
-      e.target.src = '/default-avatar.png';
-    }
-                  }}
+                    src={comment.owner?.avatar || '/default-avatar.png'}
+                    alt={comment.owner?.fullName || 'User avatar'}
+                    className="w-12 h-12 rounded-full object-cover ring-3 ring-gray-100 flex-shrink-0"
+                    onError={(e) => {
+                      e.target.src = '/default-avatar.png';
+                    }}
                   />
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
@@ -502,19 +479,8 @@ export default function Watch() {
                       <p className="text-gray-700 leading-relaxed mb-4">{comment.content}</p>
                     )}
 
+                    {/* Comment actions - REMOVED like button, kept only edit/delete for owner */}
                     <div className="flex items-center space-x-6">
-                      <button
-                        onClick={() => handleCommentLike(comment._id)}
-                        className={`group flex items-center space-x-2 text-sm transition-all duration-200 hover:scale-105 ${
-                          comment.isLiked ? 'text-indigo-600' : 'text-gray-500 hover:text-indigo-600'
-                        }`}
-                      >
-                        <ThumbsUp
-                          className={`w-4 h-4 group-hover:scale-110 transition-transform duration-200 ${comment.isLiked ? 'fill-current' : ''}`}
-                        />
-                        <span className="font-medium">{comment.likesCount || 0}</span>
-                      </button>
-
                       {comment.owner?._id === user?._id && (
                         <>
                           <button
