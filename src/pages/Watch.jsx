@@ -104,7 +104,8 @@ export default function Watch() {
   const handleLike = async () => {
     try {
       await toggleVideoLike(id);
-      await fetchVideo(); // ensures state in sync
+      setIsLiked(!isLiked)
+      setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
     } catch (error) {
       console.error('Error toggling like:', error);
     }
