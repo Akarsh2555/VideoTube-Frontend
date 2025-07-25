@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import { getVideoById } from '../api/videos';
 import { useAuth } from '../context/AuthContext';
 
-// Import from your existing files
+// Comments & likes apis
 import { addComment, updateComment, deleteComment, getVideoComments } from '../api/comments';
 import { toggleVideoLike, toggleCommentLike } from '../api/likes';
 import { toggleSubscription } from '../api/subscriptions';
 
-// Lucide React icons
+// Lucide icons
 import { 
   ThumbsUp, 
   Share2, 
@@ -33,6 +33,7 @@ export default function Watch() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,28 +45,28 @@ export default function Watch() {
   const [editingComment, setEditingComment] = useState(null);
   const [editContent, setEditContent] = useState('');
 
-  // Like and subscribe state
+  // Likes and subscription
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
-  // --- CORRECT: fetchVideo is now re-callable, safely sets all state
+  // Fetch video & refresh state
   const fetchVideo = async () => {
     try {
       setLoading(true);
       const response = await getVideoById(id);
       const videoData = response.data.data;
+
       setVideo(videoData);
       setLikeCount(videoData.likesCount || 0);
       setIsLiked(videoData.isLiked || false);
       setIsSubscribed(videoData.isSubscribed || false);
       setError(null);
 
-      // Fetch comments when video is loaded
       fetchComments();
-    } catch (error) {
-      console.error('Error fetching video:', error);
+    } catch (err) {
+      console.error('Error fetching video:', err);
       setError('Failed to load video. Please try again.');
     } finally {
       setLoading(false);
@@ -74,7 +75,6 @@ export default function Watch() {
 
   useEffect(() => {
     if (id) fetchVideo();
-    // eslint-disable-next-line
   }, [id]);
 
   // Fetch comments
@@ -83,39 +83,40 @@ export default function Watch() {
       setCommentsLoading(true);
       const response = await getVideoComments(id);
       setComments(response.data.docs || []);
-    } catch (error) {
-      console.error('Error fetching comments:', error);
+    } catch (err) {
+      console.error('Error fetching comments:', err);
     } finally {
       setCommentsLoading(false);
     }
   };
 
-  // Handle video like (CORRECT: refetches backend state after toggle)
+  // Toggle like - refetch video to sync state after
   const handleLike = async () => {
     try {
       await toggleVideoLike(id);
-      await fetchVideo(); // ensures state in sync
-    } catch (error) {
-      console.error('Error toggling like:', error);
+      // Refetch video state after toggling like to maintain consistency
+      await fetchVideo();
+    } catch (err) {
+      console.error('Error toggling like:', err);
     }
   };
 
-  // Handle subscribe
+  // Subscribe toggle
   const handleSubscribe = async () => {
     if (!video?.owner?._id) return;
     try {
       setSubscriptionLoading(true);
       const response = await toggleSubscription(video.owner._id);
       setIsSubscribed(response.data.isSubscribed);
-    } catch (error) {
-      console.error('Error toggling subscription:', error);
+    } catch (err) {
+      console.error('Error toggling subscription:', err);
       alert('Failed to update subscription. Please try again.');
     } finally {
       setSubscriptionLoading(false);
     }
   };
 
-  // Handle add comment
+  // Add comment
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!newComment.trim()) return;
@@ -123,64 +124,60 @@ export default function Watch() {
       const response = await addComment(id, newComment);
       setComments(prev => [response.data, ...prev]);
       setNewComment('');
-    } catch (error) {
-      console.error('Error adding comment:', error);
+    } catch (err) {
+      console.error('Error adding comment:', err);
     }
   };
 
-  // Handle edit comment
+  // Edit comment
   const handleEditComment = async (commentId) => {
     if (!editContent.trim()) return;
     try {
       await updateComment(commentId, editContent);
       setComments(prev =>
         prev.map(comment =>
-          comment._id === commentId
-            ? { ...comment, content: editContent }
-            : comment
+          comment._id === commentId ? { ...comment, content: editContent } : comment
         )
       );
       setEditingComment(null);
       setEditContent('');
-    } catch (error) {
-      console.error('Error updating comment:', error);
+    } catch (err) {
+      console.error('Error updating comment:', err);
     }
   };
 
-  // Handle delete comment
+  // Delete comment
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm('Are you sure you want to delete this comment?')) return;
     try {
       await deleteComment(commentId);
       setComments(prev => prev.filter(comment => comment._id !== commentId));
-    } catch (error) {
-      console.error('Error deleting comment:', error);
+    } catch (err) {
+      console.error('Error deleting comment:', err);
     }
   };
 
-  // Handle comment like
+  // Like comment
   const handleCommentLike = async (commentId) => {
     try {
       await toggleCommentLike(commentId);
       setComments(prev =>
         prev.map(comment =>
           comment._id === commentId
-            ? {
-                ...comment,
-                isLiked: !comment.isLiked,
-                likesCount: comment.isLiked
-                  ? (comment.likesCount || 0) - 1
-                  : (comment.likesCount || 0) + 1
-              }
-            : comment
+          ? { 
+              ...comment, 
+              isLiked: !comment.isLiked,
+              likesCount: comment.isLiked ? (comment.likesCount || 0) -1 : (comment.likesCount || 0) +1
+            }
+          : comment
         )
       );
-    } catch (error) {
-      console.error('Error toggling comment like:', error);
+    } catch (err) {
+      console.error('Error toggling comment like:', err);
     }
   };
 
-  if (loading) {
+    if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
@@ -242,8 +239,14 @@ export default function Watch() {
                     <span className="font-medium">Now Playing</span>
                   </div>
                   <div className="flex items-center space-x-4 text-sm">
-                    <span className="flex items-center"><Eye className="w-4 h-4 mr-1" />{video.views?.toLocaleString() || 0}</span>
-                    <span className="flex items-center"><Heart className="w-4 h-4 mr-1" />{likeCount}</span>
+                    <span className="flex items-center">
+                      <Eye className="w-4 h-4 mr-1" />
+                      {video.views?.toLocaleString() || 0}
+                    </span>
+                    <span className="flex items-center">
+                      <Heart className="w-4 h-4 mr-1" />
+                      {likeCount}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -257,7 +260,7 @@ export default function Watch() {
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text">
               {video.title}
             </h1>
-            
+
             {/* Video Stats */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="flex items-center flex-wrap gap-6 text-sm text-gray-600">
@@ -276,25 +279,25 @@ export default function Watch() {
                   </div>
                 )}
               </div>
-              
+
               {/* Action Buttons */}
               <div className="flex items-center space-x-4">
-                <button 
+                <button
                   onClick={handleLike}
                   className={`group flex items-center space-x-3 px-6 py-3 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 ${
-                    isLiked 
-                      ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white' 
+                    isLiked
+                      ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
                       : 'bg-white border-2 border-gray-200 text-gray-700 hover:border-red-300'
                   }`}
                 >
-                  <ThumbsUp 
+                  <ThumbsUp
                     className={`w-5 h-5 transition-all duration-300 group-hover:scale-110 ${
                       isLiked ? 'fill-current' : ''
-                    }`} 
+                    }`}
                   />
                   <span>{likeCount}</span>
                 </button>
-                
+
                 <button className="group flex items-center space-x-3 px-6 py-3 bg-white border-2 border-gray-200 hover:border-blue-300 rounded-full transition-all duration-300 font-medium text-gray-700 shadow-lg hover:shadow-xl transform hover:scale-105">
                   <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                   <span>Share</span>
@@ -307,8 +310,8 @@ export default function Watch() {
           <div className="border-t border-gray-100 pt-6">
             <div className="flex items-start space-x-6">
               <div className="relative">
-                <img 
-                  src={video.owner?.avatar || '/default-avatar.png'} 
+                <img
+                  src={video.owner?.avatar || '/default-avatar.png'}
                   alt={video.owner?.fullName || 'Channel'}
                   className="w-16 h-16 rounded-full object-cover ring-4 ring-white shadow-lg"
                   onError={(e) => {
@@ -319,7 +322,7 @@ export default function Watch() {
                   <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
               </div>
-              
+
               <div className="flex-1">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div>
@@ -332,8 +335,8 @@ export default function Watch() {
                       <span className="text-sm">Creator</span>
                     </p>
                   </div>
-                  
-                  <button 
+
+                  <button
                     onClick={handleSubscribe}
                     disabled={subscriptionLoading}
                     className={`group flex items-center space-x-3 px-8 py-3 rounded-full font-bold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed ${
@@ -388,8 +391,8 @@ export default function Watch() {
           {/* Add Comment Form */}
           <form onSubmit={handleAddComment} className="mb-10">
             <div className="flex space-x-4">
-              <img 
-                src={user?.avatar || '/default-avatar.png'} 
+              <img
+                src={user?.avatar || '/default-avatar.png'}
                 alt={user?.fullName}
                 className="w-12 h-12 rounded-full object-cover ring-3 ring-indigo-100 flex-shrink-0"
               />
@@ -442,11 +445,19 @@ export default function Watch() {
               </div>
             ) : (
               comments.map((comment) => (
-                <div key={comment._id} className="flex space-x-4 p-6 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-indigo-50 transition-all duration-300 border border-transparent hover:border-indigo-100">
-                  <img 
-                    src={comment.owner?.avatar || '/default-avatar.png'} 
-                    alt={comment.owner?.fullName}
-                    className="w-12 h-12 rounded-full object-cover ring-3 ring-gray-100 flex-shrink-0"
+                <div
+                  key={comment._id}
+                  className="flex space-x-4 p-6 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-indigo-50 transition-all duration-300 border border-transparent hover:border-indigo-100"
+                >
+                  <img
+                  src={comment.owner?.avatar || '/default-avatar.png'}
+  alt={comment.owner?.fullName || 'User avatar'}
+  className="w-12 h-12 rounded-full object-cover ring-3 ring-gray-100 flex-shrink-0"
+  onError={(e) => {
+    if (e.target.src !== '/default-avatar.png') {
+      e.target.src = '/default-avatar.png';
+    }
+                  }}
                   />
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
@@ -458,7 +469,7 @@ export default function Watch() {
                         {new Date(comment.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                    
+
                     {editingComment === comment._id ? (
                       <div className="mt-3">
                         <textarea
@@ -492,13 +503,13 @@ export default function Watch() {
                     )}
 
                     <div className="flex items-center space-x-6">
-                      <button 
+                      <button
                         onClick={() => handleCommentLike(comment._id)}
                         className={`group flex items-center space-x-2 text-sm transition-all duration-200 hover:scale-105 ${
                           comment.isLiked ? 'text-indigo-600' : 'text-gray-500 hover:text-indigo-600'
                         }`}
                       >
-                        <ThumbsUp 
+                        <ThumbsUp
                           className={`w-4 h-4 group-hover:scale-110 transition-transform duration-200 ${comment.isLiked ? 'fill-current' : ''}`}
                         />
                         <span className="font-medium">{comment.likesCount || 0}</span>
@@ -506,7 +517,7 @@ export default function Watch() {
 
                       {comment.owner?._id === user?._id && (
                         <>
-                          <button 
+                          <button
                             onClick={() => {
                               setEditingComment(comment._id);
                               setEditContent(comment.content);
@@ -516,7 +527,7 @@ export default function Watch() {
                             <Edit3 className="w-3 h-3" />
                             <span>Edit</span>
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDeleteComment(comment._id)}
                             className="flex items-center space-x-1 text-sm text-red-500 hover:text-red-700 transition-all duration-200"
                           >

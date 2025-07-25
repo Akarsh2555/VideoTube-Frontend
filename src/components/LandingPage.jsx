@@ -192,7 +192,9 @@ const LandingPage = () => {
                 onClick={(e) => handleLinkClick(e, '/launch')}
                 className="group relative flex items-center space-x-4 px-12 py-5 bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-500 hover:via-purple-500 hover:to-pink-500 text-white rounded-3xl font-bold text-lg shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 transition-all transform hover:scale-105 border border-white/20"
               >
-                <span>Launch Your Channel</span>
+                <button
+                onClick= {(e) => navigate("/register")} 
+                >Launch Your Channel</button>
                 <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                 <div className="absolute inset-0 bg-gradient-to-r from-violet-400 to-pink-400 rounded-3xl blur opacity-0 group-hover:opacity-30 transition-opacity"></div>
               </a>
@@ -203,7 +205,9 @@ const LandingPage = () => {
                 className="flex items-center space-x-3 px-12 py-5 bg-white/5 hover:bg-white/10 text-white rounded-3xl font-bold text-lg border border-white/20 hover:border-white/40 transition-all backdrop-blur-sm"
               >
                 <Play className="w-6 h-6" />
-                <span>See It In Action</span>
+                <button
+                onClick={(e) => navigate("/login")}
+                >See It In Action</button>
               </a>
             </div>
 
