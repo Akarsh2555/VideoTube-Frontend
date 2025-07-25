@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 // Import from your existing files
 import { addComment, updateComment, deleteComment, getVideoComments } from '../api/comments';
-import { toggleVideoLike, toggleCommentLike } from '../api/likes';
+import { toggleVideoLike } from '../api/likes';
 import { toggleSubscription } from '../api/subscriptions';
 
 // Lucide React icons
@@ -44,7 +44,7 @@ export default function Watch() {
   const [editingComment, setEditingComment] = useState(null);
   const [editContent, setEditContent] = useState('');
 
-  // Like and subscribe state
+  // Like and subscribe state (only for video, not comments)
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -82,7 +82,7 @@ export default function Watch() {
     // eslint-disable-next-line
   }, [id]);
 
-  // Fetch comments
+  // Fetch comments (simplified without like data)
   const fetchComments = async () => {
     try {
       setCommentsLoading(true);
@@ -95,7 +95,7 @@ export default function Watch() {
     }
   };
 
-  // FIXED: Better like handler with optimistic updates and error handling
+  // Video like handler (unchanged)
   const handleLike = async () => {
     if (!user) {
       alert('Please login to like videos');
@@ -127,7 +127,7 @@ export default function Watch() {
     }
   };
 
-  // FIXED: Better subscribe handler
+  // Subscribe handler (unchanged)
   const handleSubscribe = async () => {
     if (!user) {
       alert('Please login to subscribe');
@@ -207,34 +207,6 @@ export default function Watch() {
     } catch (error) {
       console.error('Error deleting comment:', error);
       alert('Failed to delete comment. Please try again.');
-    }
-  };
-
-  // Handle comment like
-  const handleCommentLike = async (commentId) => {
-    if (!user) {
-      alert('Please login to like comments');
-      return;
-    }
-
-    try {
-      await toggleCommentLike(commentId);
-      setComments(prev =>
-        prev.map(comment =>
-          comment._id === commentId
-            ? {
-                ...comment,
-                isLiked: !comment.isLiked,
-                likesCount: comment.isLiked
-                  ? (comment.likesCount || 0) - 1
-                  : (comment.likesCount || 0) + 1
-              }
-            : comment
-        )
-      );
-    } catch (error) {
-      console.error('Error toggling comment like:', error);
-      alert('Failed to update comment like. Please try again.');
     }
   };
 
@@ -335,7 +307,7 @@ export default function Watch() {
                 )}
               </div>
               
-              {/* Action Buttons - FIXED LIKE BUTTON STYLING */}
+              {/* Action Buttons */}
               <div className="flex items-center space-x-4">
                 <button 
                   onClick={handleLike}
@@ -556,20 +528,8 @@ export default function Watch() {
                       <p className="text-gray-700 leading-relaxed mb-4">{comment.content}</p>
                     )}
 
+                    {/* Comment Actions - Only Edit/Delete, No Like Button */}
                     <div className="flex items-center space-x-6">
-                      <button 
-                        onClick={() => handleCommentLike(comment._id)}
-                        disabled={!user}
-                        className={`group flex items-center space-x-2 text-sm transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
-                          comment.isLiked ? 'text-indigo-600' : 'text-gray-500 hover:text-indigo-600'
-                        }`}
-                      >
-                        <ThumbsUp 
-                          className={`w-4 h-4 group-hover:scale-110 transition-transform duration-200 ${comment.isLiked ? 'fill-current' : ''}`}
-                        />
-                        <span className="font-medium">{comment.likesCount || 0}</span>
-                      </button>
-
                       {comment.owner?._id === user?._id && (
                         <>
                           <button 
