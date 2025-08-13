@@ -1,4 +1,4 @@
-// components/Layout/Layout.jsx (Enhanced with mobile responsiveness and better UI)
+// components/Layout/Layout.jsx (Fixed overflow issue)
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -71,7 +71,7 @@ const Layout = ({ children }) => {
       {/* Mobile Menu Button */}
       <button
         onClick={toggleMobileMenu}
-        className="fixed top-6 left-6 z-[60] lg:hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-2xl shadow-2xl hover:shadow-indigo-200 transition-all duration-300 transform hover:scale-105"
+        className="fixed top-6 left-6 z-[60] lg:hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-2xl shadow-2xl hover:shadow-indigo-200 transition-all duration-300 hover:brightness-110"
       >
         {isMobileMenuOpen ? (
           <X className="w-6 h-6" />
@@ -92,18 +92,18 @@ const Layout = ({ children }) => {
       <aside
         className={`
           fixed left-0 top-0 h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white flex flex-col shadow-2xl z-50 transition-all duration-300
-          w-80
+          w-80 
           lg:translate-x-0
           ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         {/* Sidebar Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/90 via-purple-900/90 to-pink-900/90"></div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-white/10 to-transparent transform -skew-y-12 origin-top-left"></div>
+        <div className=" inset-0 bg-gradient-to-br from-indigo-900/90 via-purple-900/90 to-pink-900/90 "></div>
+        <div className=" inset-0 opacity-10">
+          <div className=" top-0 left-0 w-full h-full bg-gradient-to-r from-white/10 to-transparent transform -skew-y-12 origin-top-left"></div>
         </div>
 
-        <div className="relative z-10 flex flex-col h-full p-8">
+        <div className="relative z-10 flex flex-col h-full p-8 overflow-hidden">
           {/* Header */}
           <div className="mb-12 pt-8 lg:pt-4">
             <div className="flex items-center space-x-3 mb-3">
@@ -123,7 +123,7 @@ const Layout = ({ children }) => {
           </div>
           
           {/* Navigation */}
-          <nav className="flex flex-col gap-2 mb-8 flex-1 overflow-y-auto">
+          <nav className="flex flex-col gap-2 mb-8 flex-1 overflow-y-auto px-1">
             {navigationItems.map((item) => {
               const IconComponent = item.icon;
               const isActive = isActivePath(item.path);
@@ -133,10 +133,10 @@ const Layout = ({ children }) => {
                   key={item.path}
                   to={item.path}
                   onClick={closeMobileMenu}
-                  className={`group relative flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden ${
+                  className={`group relative flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 overflow-hidden ${
                     isActive
                       ? "bg-white/20 text-white shadow-lg shadow-white/10 border border-white/20"
-                      : "hover:bg-white/10 text-indigo-200 hover:text-white"
+                      : "hover:bg-white/15 text-indigo-200 hover:text-white hover:shadow-md"
                   }`}
                 >
                   {/* Background gradient for active item */}
@@ -144,12 +144,15 @@ const Layout = ({ children }) => {
                     <div className={`absolute inset-0 bg-gradient-to-r ${item.gradient} opacity-20 rounded-2xl`}></div>
                   )}
                   
+                  {/* Hover effect gradient */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}></div>
+                  
                   <div className={`relative z-10 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
                     isActive 
                       ? `bg-gradient-to-r ${item.gradient} shadow-lg` 
-                      : "bg-white/10 group-hover:bg-white/20"
+                      : "bg-white/10 group-hover:bg-white/20 group-hover:shadow-sm"
                   }`}>
-                    <IconComponent className={`w-5 h-5 ${isActive ? 'text-white' : 'text-indigo-200 group-hover:text-white'}`} />
+                    <IconComponent className={`w-5 h-5 transition-all duration-300 ${isActive ? 'text-white' : 'text-indigo-200 group-hover:text-white'}`} />
                   </div>
                   
                   <span className={`relative z-10 font-medium transition-all duration-300 ${
@@ -161,6 +164,9 @@ const Layout = ({ children }) => {
                   {isActive && (
                     <ChevronRight className="w-4 h-4 ml-auto text-white/80" />
                   )}
+                  
+                  {/* Subtle slide effect instead of scale */}
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </Link>
               );
             })}
@@ -204,7 +210,7 @@ const Layout = ({ children }) => {
                     closeMobileMenu();
                     navigate("/")
                   }}
-                  className="w-full bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500 hover:to-pink-500 text-red-200 hover:text-white py-3 px-4 rounded-xl transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-2 border border-red-500/20 hover:border-red-500/50 transform hover:scale-105"
+                  className="w-full bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500 hover:to-pink-500 text-red-200 hover:text-white py-3 px-4 rounded-xl transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-2 border border-red-500/20 hover:border-red-500/50 hover:shadow-lg"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Logout</span>
