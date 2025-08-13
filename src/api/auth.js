@@ -71,5 +71,6 @@ export const updateUserAvatarOrCover = (formData) => {
   }
 };
 
+
 // Delete user account (if you have this route)
 export const deleteAccount = () => axiosInstance.delete("/users/delete-account");

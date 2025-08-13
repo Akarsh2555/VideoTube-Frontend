@@ -99,16 +99,24 @@ const Dashboard = () => {
   };
 
   const handleUpdate = async () => {
-    try {
-      await updateUserProfile(localUser._id, form);
-      setEditing(false);
-      const updatedUser = { ...localUser, ...form };
-      setLocalUser(updatedUser);
-      updateUser(updatedUser);
-    } catch (error) {
-      console.error("Profile update failed:", error);
-    }
-  };
+  try {
+    await updateUserProfile(form);
+    setEditing(false);
+    
+    const updatedUserResponse = await getCurrentUser();
+    const updatedUserData = updatedUserResponse.data.data;
+    
+    setLocalUser(updatedUserData);
+    updateUser(updatedUserData);
+    
+    setSuccessMessage("Profile updated successfully!");
+    setTimeout(() => setSuccessMessage(""), 5000);
+    
+  } catch (error) {
+    console.error("Profile update failed:", error);
+    alert("Failed to update profile. Please try again.");
+  }
+};
 
   const handleFileUpdate = async (e) => {
     const file = e.target.files[0];
