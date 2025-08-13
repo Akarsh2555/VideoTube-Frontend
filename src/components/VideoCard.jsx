@@ -180,7 +180,7 @@ const VideoCard = ({ video, onVideoClick }) => {
           {/* Video Details */}
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <h3 className="text-gray-900 font-semibold text-sm leading-tight mb-1 line-clamp-2 group-hover:text-blue-700 transition-colors duration-200">
+            <h3 className="text-white-500 font-semibold text-sm leading-tight mb-1 line-clamp-2 group-hover:text-blue-700 transition-colors duration-200">
               {video.title}
             </h3>
 

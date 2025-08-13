@@ -215,7 +215,7 @@ export default function Watch() {
       const response = await addComment(id, newComment);
       console.log('Add Comment API Response:', response.data); // Debug log
       
-      const newCommentData = response.data.data || response.data;
+      const newCommentData = response.data;
       setComments(prev => [newCommentData, ...prev]);
       setNewComment('');
     } catch (error) {
@@ -533,13 +533,13 @@ export default function Watch() {
                 <div key={comment._id} className="flex space-x-4 p-6 rounded-xl hover:bg-gradient-to-r hover:from-gray-50 hover:to-indigo-50 transition-all duration-300 border border-transparent hover:border-indigo-100">
                   <img 
                     src={comment.owner?.avatar || '/default-avatar.png'} 
-                    alt={comment.owner?.fullName}
+                    alt={comment.owner?.username || 'Commenter'}
                     className="w-12 h-12 rounded-full object-cover ring-3 ring-gray-100 flex-shrink-0"
                   />
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
                       <h4 className="font-bold text-gray-900">
-                        {comment.owner?.fullName || 'Unknown User'}
+                        {comment.owner?.username || 'Unknown User'}
                       </h4>
                       <span className="text-gray-500 text-sm flex items-center bg-gray-100 px-2 py-1 rounded-full">
                         <Calendar className="w-3 h-3 mr-1" />
