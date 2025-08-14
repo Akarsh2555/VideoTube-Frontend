@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
     { path: "/", icon: Home, label: "Home", gradient: "from-blue-500 to-cyan-500" },
     { path: "/dashboard", icon: BarChart3, label: "Dashboard", gradient: "from-purple-500 to-indigo-500" },
     { path: "/videos", icon: Video, label: "Videos", gradient: "from-red-500 to-pink-500" },
-    { path: "/tweets", icon: MessageSquare, label: "Tweets", gradient: "from-green-500 to-emerald-500" },
+    { path: "/tweets", icon: MessageSquare, label: "My-Tweets", gradient: "from-green-500 to-emerald-500" },
     { path: "/subscriptions", icon: Users, label: "Subscriptions", gradient: "from-orange-500 to-yellow-500" },
     {path: "/community-tweets", icon: Bird, label: "Community-Tweets", gradient: "from-teal-500 to-cyan-500" },
     {path: "/history", icon: Book, label: "Watch History", gradient: "from-gray-500 to-slate-500" },
