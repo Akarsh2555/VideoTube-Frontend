@@ -188,8 +188,8 @@ const LandingPage = () => {
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
               <a
-                href="/launch"
-                onClick={(e) => handleLinkClick(e, '/launch')}
+                href="/register"
+                onClick={(e) => handleLinkClick(e, '/register')}
                 className="group relative flex items-center space-x-4 px-12 py-5 bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 hover:from-violet-500 hover:via-purple-500 hover:to-pink-500 text-white rounded-3xl font-bold text-lg shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 transition-all transform hover:scale-105 border border-white/20"
               >
                 <button
@@ -200,8 +200,8 @@ const LandingPage = () => {
               </a>
               
               <a
-                href="/demo"
-                onClick={(e) => handleLinkClick(e, '/demo')}
+                href="/login"
+                onClick={(e) => handleLinkClick(e, '/login')}
                 className="flex items-center space-x-3 px-12 py-5 bg-white/5 hover:bg-white/10 text-white rounded-3xl font-bold text-lg border border-white/20 hover:border-white/40 transition-all backdrop-blur-sm"
               >
                 <Play className="w-6 h-6" />
